@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ALFREDO — 운영 대시보드</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&family=DM+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Noto Sans KR', sans-serif; background: #f4f2ee; color: #111; font-size: 15px; }
+.wrap { max-width: 960px; margin: 0 auto; padding: 36px 24px; }
+
+/* 헤더 */
+.header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 32px; }
+.header-left { display: flex; align-items: center; gap: 12px; }
+.logo { width: 40px; height: 40px; background: #2E7D5E; border-radius: 10px 10px 10px 2px; display: flex; align-items: center; justify-content: center; }
+.logo span { color: white; font-size: 10px; font-weight: 700; font-family: 'DM Mono', monospace; letter-spacing: 0.05em; }
+.title { font-size: 22px; font-weight: 700; color: #111; }
+.subtitle { font-size: 13px; color: #888; margin-top: 2px; }
+.month-tag { font-size: 13px; color: #888; background: #e8e5e0; padding: 6px 14px; border-radius: 20px; }
+
+/* KPI */
+.kpi-row { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 14px; margin-bottom: 36px; }
+.kpi { background: white; border-radius: 14px; padding: 22px 24px; border: 1.5px solid #e0ddd8; }
+.kpi.highlight { border-color: #2E7D5E; }
+.kpi-label { font-size: 13px; color: #888; margin-bottom: 10px; }
+.kpi-value { font-size: 32px; font-weight: 700; color: #111; font-family: 'DM Mono', monospace; line-height: 1; }
+.kpi-value.green { color: #2E7D5E; }
+.kpi-note { font-size: 12px; color: #E30613; margin-top: 8px; }
+.kpi-note.muted { color: #999; }
+
+/* 섹션 */
+.section-title { font-size: 13px; font-weight: 700; color: #888; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 16px; padding-bottom: 10px; border-bottom: 2px solid #e0ddd8; }
+
+/* 2단 */
+.two-col { display: grid; grid-template-columns: 1.6fr 1fr; gap: 14px; margin-bottom: 36px; }
+.panel { background: white; border-radius: 12px; padding: 20px; border: 1.5px solid #e0ddd8; }
+.panel-title { font-size: 14px; font-weight: 700; color: #111; margin-bottom: 16px; }
+
+/* 업무 */
+.job-item { display: flex; align-items: center; justify-content: space-between; padding: 11px 0; border-bottom: 1px solid #f0ede8; }
+.job-item:last-child { border-bottom: none; }
+.job-left { display: flex; align-items: flex-start; gap: 10px; }
+.job-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; margin-top: 4px; }
+.dot-done { background: #2d6e0f; }
+.dot-ing  { background: #E30613; }
+.dot-plan { background: #bbb; }
+.job-name { font-size: 14px; font-weight: 500; color: #111; }
+.job-meta { font-size: 12px; color: #999; margin-top: 2px; }
+.job-status { font-size: 12px; color: #999; white-space: nowrap; flex-shrink: 0; }
+
+/* 피드백 */
+.fb-item { padding: 10px 0; border-bottom: 1px solid #f0ede8; }
+.fb-item:last-child { border-bottom: none; }
+.fb-tag { display: inline-block; font-size: 11px; padding: 3px 9px; border-radius: 20px; font-weight: 700; margin-bottom: 5px; }
+.fb-good { background: #e8f5e0; color: #2d6e0f; }
+.fb-bad  { background: #fdecea; color: #c0392b; }
+.fb-text { font-size: 14px; color: #111; }
+.fb-who  { font-size: 12px; color: #bbb; margin-top: 3px; }
+
+/* 팀원 */
+.member-grid { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 12px; margin-bottom: 36px; }
+.member-card { background: white; border-radius: 12px; padding: 16px 18px; border: 1.5px solid #e0ddd8; display: flex; align-items: center; gap: 14px; }
+.avatar { width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 700; flex-shrink: 0; }
+.av1 { background: #e6f1fb; color: #185fa5; }
+.av2 { background: #e8f5e0; color: #2d6e0f; }
+.av3 { background: #fff8e6; color: #8a5a00; }
+.member-name { font-size: 15px; font-weight: 700; color: #111; }
+.member-count { font-size: 13px; color: #999; margin-top: 3px; }
+
+/* 재고 */
+.stock-grid { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 12px; margin-bottom: 36px; }
+.stock-card { background: white; border-radius: 12px; padding: 16px 18px; border: 1.5px solid #e0ddd8; border-left: 4px solid #e0ddd8; }
+.stock-card.s-danger { border-left-color: #E30613; }
+.stock-card.s-warn   { border-left-color: #EF9F27; }
+.stock-card.s-ok     { border-left-color: #2d6e0f; }
+.stock-name { font-size: 14px; font-weight: 700; color: #111; margin-bottom: 10px; }
+.stock-bar-bg { height: 6px; background: #f0ede8; border-radius: 99px; overflow: hidden; margin-bottom: 10px; }
+.stock-bar { height: 6px; border-radius: 99px; }
+.bar-ok   { background: #2d6e0f; }
+.bar-warn { background: #EF9F27; }
+.bar-low  { background: #E30613; }
+.stock-nums { display: flex; justify-content: space-between; align-items: center; }
+.stock-cur { font-size: 15px; font-weight: 700; color: #111; font-family: 'DM Mono', monospace; }
+.stock-min { font-size: 12px; color: #bbb; }
+.stock-badge { display: inline-block; margin-top: 8px; font-size: 11px; padding: 4px 10px; border-radius: 20px; font-weight: 700; }
+.sb-ok      { background: #e8f5e0; color: #2d6e0f; }
+.sb-warn    { background: #fff8e6; color: #8a5a00; }
+.sb-danger  { background: #fdecea; color: #c0392b; }
+
+/* 푸터 */
+.footer { background: #1a1a1a; border-radius: 12px; padding: 18px 22px; display: flex; align-items: center; justify-content: space-between; }
+.footer-text { font-size: 13px; color: #777; line-height: 1.6; }
+.footer-text strong { color: #ccc; }
+.footer-tag { font-size: 12px; color: #555; background: #2a2a2a; padding: 6px 12px; border-radius: 20px; font-family: 'DM Mono', monospace; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- 헤더 -->
+  <div class="header">
+    <div class="header-left">
+      <div class="logo"><span>ALF</span></div>
+      <div>
+        <div class="title">ALFREDO</div>
+        <div class="subtitle">운영 대시보드 · Narrative Works 프로젝트</div>
+      </div>
+    </div>
+    <div class="month-tag" id="today-date"></div>
+  </div>
+
+  <!-- KPI -->
+  <div class="kpi-row">
+    <div class="kpi highlight">
+      <div class="kpi-label">이번달 매출</div>
+      <div class="kpi-value green">₩0</div>
+      <div class="kpi-note">매출 DB 입력 필요</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">이번달 완료 건수</div>
+      <div class="kpi-value">0</div>
+      <div class="kpi-note">목표 건수 대비 입력 필요</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">AS 건수</div>
+      <div class="kpi-value">0</div>
+      <div class="kpi-note muted">이번달 누적</div>
+    </div>
+  </div>
+
+  <!-- 오늘 업무 + 피드백 -->
+  <div class="section-title">오늘 현황</div>
+  <div class="two-col">
+    <div class="panel">
+      <div class="panel-title">📋 오늘의 업무</div>
+      <div class="job-item">
+        <div class="job-left">
+          <div class="job-dot dot-plan"></div>
+          <div>
+            <div class="job-name">업무를 노션에서 추가해주세요</div>
+            <div class="job-meta">업무일지 DB에 오늘 날짜로 입력</div>
+          </div>
+        </div>
+        <div class="job-status">예정</div>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="panel-title">💬 최근 피드백</div>
+      <div class="fb-item">
+        <span class="fb-tag fb-good">잘한 점</span>
+        <div class="fb-text">욕실 줄눈 꼼꼼하게 처리</div>
+        <div class="fb-who">피드백 DB에서 관리</div>
+      </div>
+      <div class="fb-item">
+        <span class="fb-tag fb-bad">개선할 점</span>
+        <div class="fb-text">창틀 안쪽 청소 누락</div>
+        <div class="fb-who">피드백 DB에서 관리</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 팀원 현황 -->
+  <div class="section-title">팀원 현황</div>
+  <div class="member-grid">
+    <div class="member-card">
+      <div class="avatar av1">윤</div>
+      <div>
+        <div class="member-name">윤인수</div>
+        <div class="member-count">이번달 완료: 0건</div>
+      </div>
+    </div>
+    <div class="member-card">
+      <div class="avatar av2">김</div>
+      <div>
+        <div class="member-name">김하늘</div>
+        <div class="member-count">이번달 완료: 0건</div>
+      </div>
+    </div>
+    <div class="member-card">
+      <div class="avatar av3">김</div>
+      <div>
+        <div class="member-name">김교주</div>
+        <div class="member-count">이번달 완료: 0건</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 재고 현황 -->
+  <div class="section-title">도구 · 용품 재고 현황</div>
+  <div class="stock-grid">
+    <div class="stock-card s-danger">
+      <div class="stock-name">극세사 걸레 (빨강 · 욕실용)</div>
+      <div class="stock-bar-bg"><div class="stock-bar bar-low" style="width:20%"></div></div>
+      <div class="stock-nums">
+        <span class="stock-cur">1장</span>
+        <span class="stock-min">최소 5장</span>
+      </div>
+      <span class="stock-badge sb-danger">발주 필요</span>
+    </div>
+    <div class="stock-card s-warn">
+      <div class="stock-name">다목적 세정제</div>
+      <div class="stock-bar-bg"><div class="stock-bar bar-warn" style="width:45%"></div></div>
+      <div class="stock-nums">
+        <span class="stock-cur">2개</span>
+        <span class="stock-min">최소 3개</span>
+      </div>
+      <span class="stock-badge sb-warn">곧 부족</span>
+    </div>
+    <div class="stock-card s-ok">
+      <div class="stock-name">위생장갑 (라텍스)</div>
+      <div class="stock-bar-bg"><div class="stock-bar bar-ok" style="width:80%"></div></div>
+      <div class="stock-nums">
+        <span class="stock-cur">4박스</span>
+        <span class="stock-min">최소 1박스</span>
+      </div>
+      <span class="stock-badge sb-ok">여유 있음</span>
+    </div>
+    <div class="stock-card s-warn">
+      <div class="stock-name">곰팡이 제거제</div>
+      <div class="stock-bar-bg"><div class="stock-bar bar-warn" style="width:40%"></div></div>
+      <div class="stock-nums">
+        <span class="stock-cur">1개</span>
+        <span class="stock-min">최소 2개</span>
+      </div>
+      <span class="stock-badge sb-warn">곧 부족</span>
+    </div>
+    <div class="stock-card s-ok">
+      <div class="stock-name">쓰레기봉투 (대)</div>
+      <div class="stock-bar-bg"><div class="stock-bar bar-ok" style="width:70%"></div></div>
+      <div class="stock-nums">
+        <span class="stock-cur">2롤</span>
+        <span class="stock-min">최소 1롤</span>
+      </div>
+      <span class="stock-badge sb-ok">여유 있음</span>
+    </div>
+    <div class="stock-card s-danger">
+      <div class="stock-name">마스크</div>
+      <div class="stock-bar-bg"><div class="stock-bar bar-low" style="width:15%"></div></div>
+      <div class="stock-nums">
+        <span class="stock-cur">3개</span>
+        <span class="stock-min">최소 10개</span>
+      </div>
+      <span class="stock-badge sb-danger">발주 필요</span>
+    </div>
+  </div>
+
+  <!-- 푸터 -->
+  <div class="footer">
+    <div class="footer-text"><strong>Narrative Works · ALFREDO</strong> — 수치 수정은 index.html 직접 편집</div>
+    <div class="footer-tag">Notion API 연동 예정</div>
+  </div>
+
+</div>
+<script>
+  const d = new Date();
+  const days = ['일','월','화','수','목','금','토'];
+  document.getElementById('today-date').textContent =
+    d.getFullYear() + '년 ' + (d.getMonth()+1) + '월 ' + d.getDate() + '일 ' + days[d.getDay()] + '요일';
+</script>
+</body>
+</html>
